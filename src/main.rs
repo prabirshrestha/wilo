@@ -158,6 +158,13 @@ impl Editor {
                     self.should_quit = true;
                 }
                 InputEvent::Key(KeyEvent {
+                    key: KeyCode::Tab, ..
+                }) => {
+                    for _ in 0..4 {
+                        self.buffer.push(' ');
+                    }
+                }
+                InputEvent::Key(KeyEvent {
                     key: KeyCode::Char(c),
                     ..
                 }) => {
