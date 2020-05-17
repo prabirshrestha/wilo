@@ -1,4 +1,5 @@
 use anyhow::Result;
+use std::cmp::min;
 use termwiz::{
     caps::Capabilities,
     color::*,
@@ -97,6 +98,16 @@ impl Editor {
 
         for i in self.buffer.roff..(self.buffer.roff + self.buffer.h - 1) {
             if i < self.buffer.lines.len() {
+                let line = self.buffer.lines.get(i).unwrap();
+                if line.len() < self.buffer.coff {
+                    self.bt.add_change("\r\n");
+                    continue;
+                }
+
+                let part =
+                    &line[self.buffer.coff..min(self.buffer.coff + self.buffer.w, line.len())];
+                self.bt
+                    .add_change(&Vec::from(part).iter().collect::<String>());
                 self.bt.add_change("\r\n");
             } else {
                 self.bt.add_change("~\r\n");
