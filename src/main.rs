@@ -1,7 +1,7 @@
 use anyhow::Result;
 use termwiz::{
     caps::Capabilities,
-    terminal::{buffered::BufferedTerminal, SystemTerminal},
+    terminal::{buffered::BufferedTerminal, SystemTerminal, Terminal},
 };
 
 pub struct Editor {
@@ -15,8 +15,12 @@ impl Editor {
     }
 
     pub fn run(&mut self) -> Result<()> {
+        self.buf.terminal().enter_alternate_screen()?;
+        self.buf.flush()?;
+
         self.buf.add_change("Hello world\n");
         self.buf.flush()?;
+
         Ok(())
     }
 }
