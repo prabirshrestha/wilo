@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::cmp::min;
+use std::cmp::{max, min};
 use termwiz::{
     caps::Capabilities,
     color::*,
@@ -47,6 +47,25 @@ impl Buffer {
         let cx = self.cx;
 
         self.line().insert(cx, c);
+        self.move_caret(0, 1);
+    }
+
+    pub fn move_caret(&mut self, row: i32, col: i32) {
+        let num_lines = self.lines.len() as i32;
+        self.cy = min(max(self.cy as i32 + row, 0), num_lines - 1) as usize;
+        if self.cy < self.roff {
+            self.roff = self.cy;
+        } else if self.roff > self.roff + (self.h as usize - 2) {
+            self.roff = self.cy - (self.h as usize - 2);
+        }
+
+        let line_len = self.line().len() as i32;
+        self.cx = min(max(self.cx as i32 + col, 0), line_len) as usize;
+        if self.cx < self.coff {
+            self.coff = self.cx;
+        } else if self.cx > self.coff + (self.w as usize - 1) {
+            self.coff = self.cx - (self.w as usize - 1);
+        }
     }
 }
 
@@ -116,8 +135,8 @@ impl Editor {
 
         self.bt.add_changes(vec![
             Change::CursorPosition {
-                x: Position::Absolute(0),
-                y: Position::Absolute(0),
+                x: Position::Absolute(self.buffer.cx),
+                y: Position::Absolute(self.buffer.cy),
             },
             Change::CursorShape(CursorShape::Default),
         ]);
