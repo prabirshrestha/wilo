@@ -13,11 +13,16 @@ impl Editor {
         let buf = BufferedTerminal::new(SystemTerminal::new(Capabilities::new_from_env()?)?)?;
         Ok(Self { buf })
     }
+
+    pub fn run(&mut self) -> Result<()> {
+        self.buf.add_change("Hello world\n");
+        self.buf.flush()?;
+        Ok(())
+    }
 }
 
 fn main() -> Result<()> {
     let mut editor = Editor::new()?;
-    editor.buf.add_change("Hello world\n");
-    editor.buf.flush()?;
+    editor.run()?;
     Ok(())
 }
