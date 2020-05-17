@@ -12,4 +12,4 @@ readme = "README.md"
 
 [dependencies]
 anyhow = "1.0.31"
-termwiz = "0.8.0"
+termwiz = "0.9.0"
