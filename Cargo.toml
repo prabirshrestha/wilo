@@ -5,6 +5,7 @@ authors = ["Prabir Shrestha <mail@prabir.me>"]
 edition = "2018"
 repository = "https://github.com/prabirshrestha/wilo"
 license = "MIT"
+description = "Text Editor"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
