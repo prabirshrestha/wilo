@@ -8,27 +8,59 @@ use termwiz::{
 };
 
 pub struct Editor {
-    buf: BufferedTerminal<SystemTerminal>,
+    bt: BufferedTerminal<SystemTerminal>,
     should_quit: bool,
+    buffer: Buffer,
+}
+
+pub struct Buffer {
+    roff: usize,
+    coff: usize,
+    cx: usize,
+    cy: usize,
+    w: usize,
+    h: usize,
+    lines: Vec<Vec<char>>,
+}
+
+impl Default for Buffer {
+    fn default() -> Self {
+        Self {
+            roff: 0,
+            coff: 0,
+            cx: 0,
+            cy: 0,
+            w: 0,
+            h: 0,
+            lines: vec![vec![]],
+        }
+    }
 }
 
 impl Editor {
     pub fn new() -> Result<Self> {
         let buf = BufferedTerminal::new(SystemTerminal::new(Capabilities::new_from_env()?)?)?;
+
+        let mut buffer = Buffer::default();
+        let (w, h) = buf.dimensions();
+
+        buffer.w = w;
+        buffer.h = h;
         Ok(Self {
-            buf,
+            bt: buf,
             should_quit: false,
+            buffer,
         })
     }
 
     pub fn run(&mut self) -> Result<()> {
-        self.buf.terminal().enter_alternate_screen()?;
-        self.buf.terminal().set_raw_mode()?;
-        self.buf.flush()?;
+        self.bt.terminal().enter_alternate_screen()?;
+        self.bt.terminal().set_raw_mode()?;
+        self.bt.flush()?;
 
         loop {
             self.draw_screen();
-            self.buf.flush()?;
+            self.bt.flush()?;
 
             self.handle_keys()?;
             if self.should_quit {
@@ -36,13 +68,13 @@ impl Editor {
             }
         }
 
-        self.buf.flush()?;
+        self.bt.flush()?;
 
         Ok(())
     }
 
     fn draw_screen(&mut self) {
-        self.buf.add_changes(vec![
+        self.bt.add_changes(vec![
             Change::CursorShape(CursorShape::Hidden),
             Change::ClearScreen(ColorAttribute::Default),
             Change::CursorPosition {
@@ -51,7 +83,7 @@ impl Editor {
             },
         ]);
 
-        self.buf.add_changes(vec![
+        self.bt.add_changes(vec![
             Change::CursorPosition {
                 x: Position::Absolute(0),
                 y: Position::Absolute(0),
@@ -61,7 +93,7 @@ impl Editor {
     }
 
     fn handle_keys(&mut self) -> Result<()> {
-        match self.buf.terminal().poll_input(None) {
+        match self.bt.terminal().poll_input(None) {
             Ok(Some(input)) => match input {
                 InputEvent::Key(KeyEvent {
                     key: KeyCode::Char('Q'),
