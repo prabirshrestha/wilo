@@ -3,7 +3,7 @@ use termwiz::{
     caps::Capabilities,
     color::*,
     input::*,
-    surface::Change,
+    surface::*,
     terminal::{buffered::BufferedTerminal, SystemTerminal, Terminal},
 };
 
@@ -42,8 +42,22 @@ impl Editor {
     }
 
     fn draw_screen(&mut self) {
-        self.buf
-            .add_change(Change::ClearScreen(ColorAttribute::Default));
+        self.buf.add_changes(vec![
+            Change::CursorShape(CursorShape::Hidden),
+            Change::ClearScreen(ColorAttribute::Default),
+            Change::CursorPosition {
+                x: Position::Absolute(0),
+                y: Position::Absolute(0),
+            },
+        ]);
+
+        self.buf.add_changes(vec![
+            Change::CursorPosition {
+                x: Position::Absolute(0),
+                y: Position::Absolute(0),
+            },
+            Change::CursorShape(CursorShape::Default),
+        ]);
     }
 
     fn handle_keys(&mut self) -> Result<()> {
