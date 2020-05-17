@@ -71,6 +71,17 @@ impl Buffer {
         }
     }
 
+    pub fn delete(&mut self) {
+        let (cx, cy) = (self.cx, self.cy);
+
+        if cx == self.line().len() && self.cy != self.lines.len() - 1 {
+            let line = self.lines.remove(cy + 1);
+            self.line().extend(line.iter());
+        } else if cx != self.line().len() {
+            self.line().remove(cx);
+        }
+    }
+
     pub fn move_caret(&mut self, row: i32, col: i32) {
         let num_lines = self.lines.len() as i32;
         self.cy = min(max(self.cy as i32 + row, 0), num_lines - 1) as usize;
@@ -211,6 +222,10 @@ impl Editor {
                     key: KeyCode::Backspace,
                     ..
                 }) => self.buffer.backspace(),
+                InputEvent::Key(KeyEvent {
+                    key: KeyCode::Delete,
+                    ..
+                }) => self.buffer.delete(),
                 _ => {}
             },
             Ok(None) => {}
