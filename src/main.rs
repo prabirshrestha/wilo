@@ -4,9 +4,20 @@ use termwiz::{
     terminal::{buffered::BufferedTerminal, SystemTerminal},
 };
 
+pub struct Editor {
+    buf: BufferedTerminal<SystemTerminal>,
+}
+
+impl Editor {
+    pub fn new() -> Result<Self> {
+        let buf = BufferedTerminal::new(SystemTerminal::new(Capabilities::new_from_env()?)?)?;
+        Ok(Self { buf })
+    }
+}
+
 fn main() -> Result<()> {
-    let mut buf = BufferedTerminal::new(SystemTerminal::new(Capabilities::new_from_env()?)?)?;
-    buf.add_change("Hello world\n");
-    buf.flush()?;
+    let mut editor = Editor::new()?;
+    editor.buf.add_change("Hello world\n");
+    editor.buf.flush()?;
     Ok(())
 }
