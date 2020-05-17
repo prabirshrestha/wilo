@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0.31"
+termwiz = "0.8.0"
