@@ -1,7 +1,9 @@
 use anyhow::Result;
 use termwiz::{
     caps::Capabilities,
+    color::*,
     input::*,
+    surface::Change,
     terminal::{buffered::BufferedTerminal, SystemTerminal, Terminal},
 };
 
@@ -25,6 +27,9 @@ impl Editor {
         self.buf.flush()?;
 
         loop {
+            self.draw_screen();
+            self.buf.flush()?;
+
             self.handle_keys()?;
             if self.should_quit {
                 break;
@@ -34,6 +39,11 @@ impl Editor {
         self.buf.flush()?;
 
         Ok(())
+    }
+
+    fn draw_screen(&mut self) {
+        self.buf
+            .add_change(Change::ClearScreen(ColorAttribute::Default));
     }
 
     fn handle_keys(&mut self) -> Result<()> {
