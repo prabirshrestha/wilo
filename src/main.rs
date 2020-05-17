@@ -46,8 +46,14 @@ impl Buffer {
     pub fn push(&mut self, c: char) {
         let cx = self.cx;
 
-        self.line().insert(cx, c);
-        self.move_caret(0, 1);
+        if c == '\n' {
+            let new_line = self.line().drain(cx..).collect();
+            self.lines.insert(self.cy + 1, new_line);
+            self.move_caret(1, -(self.cy as i32));
+        } else {
+            self.line().insert(cx, c);
+            self.move_caret(0, 1);
+        }
     }
 
     pub fn move_caret(&mut self, row: i32, col: i32) {
@@ -156,6 +162,12 @@ impl Editor {
                     ..
                 }) => {
                     self.buffer.push(c);
+                }
+                InputEvent::Key(KeyEvent {
+                    key: KeyCode::Enter,
+                    ..
+                }) => {
+                    self.buffer.push('\n');
                 }
                 _ => {}
             },
