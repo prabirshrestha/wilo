@@ -95,6 +95,14 @@ impl Editor {
             },
         ]);
 
+        for i in self.buffer.roff..(self.buffer.roff + self.buffer.h - 1) {
+            if i < self.buffer.lines.len() {
+                self.bt.add_change("\r\n");
+            } else {
+                self.bt.add_change("~\r\n");
+            }
+        }
+
         self.bt.add_changes(vec![
             Change::CursorPosition {
                 x: Position::Absolute(0),
