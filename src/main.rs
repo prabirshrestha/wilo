@@ -37,6 +37,18 @@ impl Default for Buffer {
     }
 }
 
+impl Buffer {
+    fn line(&mut self) -> &mut Vec<char> {
+        self.lines.get_mut(self.cy).unwrap()
+    }
+
+    pub fn push(&mut self, c: char) {
+        let cx = self.cx;
+
+        self.line().insert(cx, c);
+    }
+}
+
 impl Editor {
     pub fn new() -> Result<Self> {
         let buf = BufferedTerminal::new(SystemTerminal::new(Capabilities::new_from_env()?)?)?;
@@ -100,6 +112,12 @@ impl Editor {
                     modifiers: Modifiers::CTRL,
                 }) => {
                     self.should_quit = true;
+                }
+                InputEvent::Key(KeyEvent {
+                    key: KeyCode::Char(c),
+                    ..
+                }) => {
+                    self.buffer.push(c);
                 }
                 _ => {}
             },
