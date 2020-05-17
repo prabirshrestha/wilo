@@ -16,6 +16,7 @@ impl Editor {
 
     pub fn run(&mut self) -> Result<()> {
         self.buf.terminal().enter_alternate_screen()?;
+        self.buf.terminal().set_raw_mode()?;
         self.buf.flush()?;
 
         self.buf.add_change("Hello world\n");
