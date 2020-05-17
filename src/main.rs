@@ -176,6 +176,22 @@ impl Editor {
                 }) => {
                     self.buffer.push('\n');
                 }
+                InputEvent::Key(KeyEvent {
+                    key: KeyCode::LeftArrow,
+                    ..
+                }) => self.buffer.move_caret(0, -1),
+                InputEvent::Key(KeyEvent {
+                    key: KeyCode::RightArrow,
+                    ..
+                }) => self.buffer.move_caret(0, 1),
+                InputEvent::Key(KeyEvent {
+                    key: KeyCode::UpArrow,
+                    ..
+                }) => self.buffer.move_caret(-1, 0),
+                InputEvent::Key(KeyEvent {
+                    key: KeyCode::DownArrow,
+                    ..
+                }) => self.buffer.move_caret(1, 0),
                 _ => {}
             },
             Ok(None) => {}
