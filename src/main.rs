@@ -90,7 +90,7 @@ impl Buffer {
         self.cy = min(max(self.cy as i32 + row, 0), num_lines - 1) as usize;
         if self.cy < self.roff {
             self.roff = self.cy;
-        } else if self.roff > self.roff + (self.h as usize - 2) {
+        } else if self.cy > self.roff + (self.h as usize - 2) {
             self.roff = self.cy - (self.h as usize - 2);
         }
 
