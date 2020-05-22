@@ -1,5 +1,8 @@
 use anyhow::Result;
 use std::cmp::{max, min};
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+use std::path::PathBuf;
 use termwiz::{
     caps::Capabilities,
     color::*,
@@ -115,6 +118,15 @@ impl Editor {
             should_quit: false,
             buffer,
         })
+    }
+
+    pub fn open(&mut self, path: PathBuf) -> Result<()> {
+        let file = File::open(path)?;
+        self.buffer.lines = BufReader::new(file)
+            .lines()
+            .map(|l| l.unwrap().chars().collect())
+            .collect();
+        Ok(())
     }
 
     pub fn run(&mut self) -> Result<()> {
@@ -240,6 +252,14 @@ impl Editor {
 
 fn main() -> Result<()> {
     let mut editor = Editor::new()?;
+    let mut args: Vec<String> = std::env::args().collect();
+    if args.len() == 2 {
+        editor.open(PathBuf::from(args.remove(1)))?;
+    } else {
+        println!("Error: too many arguments");
+        println!("usage wilo [FILE]");
+        return Ok(());
+    }
     editor.run()?;
     Ok(())
 }
