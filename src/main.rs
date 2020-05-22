@@ -238,6 +238,11 @@ impl Editor {
                     key: KeyCode::Delete,
                     ..
                 }) => self.buffer.delete(),
+                InputEvent::Resized { cols, rows } => {
+                    self.buffer.w = cols;
+                    self.buffer.h = rows;
+                    self.bt.resize(self.buffer.w, self.buffer.h);
+                }
                 _ => {}
             },
             Ok(None) => {}
